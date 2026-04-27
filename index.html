@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>MediCore | Admin Medical Office</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, 'Segoe UI', 'Poppins', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 10% 20%, #e8f0fe, #d4e0f0);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            position: relative;
+        }
+
+        /* Decoração de fundo com pattern médico sutil */
+        body::before {
+            content: "⚕️";
+            font-size: 180px;
+            opacity: 0.03;
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            pointer-events: none;
+            transform: rotate(-15deg);
+        }
+
+        /* Container principal com efeito glassmorphism complexo */
+        .app-container {
+            max-width: 1400px;
+            width: 92%;
+            margin: 2rem auto;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(14px);
+            border-radius: 2.5rem;
+            box-shadow: 0 30px 50px -20px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255,255,255,0.8);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.4);
+        }
+
+        /* Header com navegação médica */
+        .glass-header {
+            background: linear-gradient(135deg, rgba(2, 48, 71, 0.85), rgba(33, 37, 41, 0.9));
+            backdrop-filter: blur(10px);
+            padding: 1.2rem 2.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            border-bottom: 2px solid rgba(72, 187, 120, 0.5);
+        }
+
+        .logo h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(130deg, #FFFFFF, #9ad7e6, #48bb78);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo span {
+            font-size: 0.8rem;
+            color: #a0e7e5;
+            display: block;
+            font-weight: 400;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.7rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 3rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.2);
+            color: #f0f7ff;
+            backdrop-filter: blur(4px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(72, 187, 120, 0.4);
+            transition: width 0.4s, height 0.4s, top 0.4s, left 0.4s;
+            transform: translate(-50%, -50%);
+        }
+
+        .nav-btn:hover::after {
+            width: 200px;
+            height: 200px;
+        }
+
+        .nav-btn.active {
+            background: #48bb78cc;
+            border-color: #ffffffaa;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+            color: white;
+        }
+
+        /* conteúdo principal */
+        .content-pane {
+            padding: 2.5rem 2rem;
+            transition: 0.2s;
+        }
+
+        /* HOME - CARDS DE SERVIÇOS MÉDICOS */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .medical-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(4px);
+            border-radius: 2rem;
+            overflow: hidden;
+            box-shadow: 0 20px 35px -15px rgba(0, 0, 0, 0.2);
+            transition: all 0.35s ease;
+            border: 1px solid rgba(72, 187, 120, 0.3);
+            transform-style: preserve-3d;
+        }
+
+        .medical-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 30px 45px -20px rgba(0, 0, 0, 0.4);
+            background: rgba(255, 255, 255, 0.98);
+            border-color: #48bb78;
+        }
+
+        .card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .medical-card:hover .card-img {
+            transform: scale(1.05);
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .card-content h3 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            background: linear-gradient(120deg, #0b3b3f, #1e6f5c);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge-med {
+            display: inline-block;
+            background: #e2f0e6;
+            padding: 0.2rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #1e6f5c;
+            margin-bottom: 1rem;
+        }
+
+        .card-content p {
+            color: #2c4b3e;
+            margin-bottom: 1.3rem;
+            line-height: 1.4;
+        }
+
+        .dynamic-btn {
+            background: linear-gradient(95deg, #236b4c, #1a5a3e);
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 2.5rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .dynamic-btn:hover {
+            background: linear-gradient(95deg, #2f8b63, #217a55);
+            transform: translateX(4px);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+            letter-spacing: 0.3px;
+        }
+
+        /* Blocos de métricas / indicadores hospitalares */
+        .stats-blocks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .stat-item {
+            flex: 1;
+            background: linear-gradient(145deg, rgba(0, 0, 0, 0.65), rgba(20, 30, 45, 0.8));
+            backdrop-filter: blur(10px);
+            border-radius: 1.8rem;
+            padding: 1.2rem 1rem;
+            text-align: center;
+            color: white;
+            transition: all 0.25s;
+            border: 1px solid rgba(72, 187, 120, 0.4);
+        }
+
+        .stat-item:hover {
+            transform: translateY(-5px);
+            background: linear-gradient(145deg, rgba(0, 0, 0, 0.75), rgba(26, 50, 65, 0.9));
+            border-color: #48bb78;
+        }
+
+        .stat-item h4 {
+            font-size: 1.1rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0.5rem 0;
+            background: linear-gradient(135deg, #f0f9ff, #c6f7d0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .mini-btn {
+            background: #48bb78aa;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 2rem;
+            color: white;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-top: 6px;
+            transition: 0.2s;
+        }
+        .mini-btn:hover {
+            background: #48bb78;
+            transform: scale(1.02);
+        }
+
+        /* Página Contato Especializada */
+        .contact-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            background: rgba(245, 250, 245, 0.8);
+            backdrop-filter: blur(16px);
+            border-radius: 2rem;
+            padding: 2rem;
+            box-shadow: 0 20px 40px -12px rgba(0,0,0,0.2);
+        }
+
+        .contact-info {
+            flex: 1.2;
+            background: rgba(255,255,240,0.3);
+            padding: 1rem;
+            border-radius: 1.5rem;
+        }
+        .contact-info h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(130deg, #165a42, #2c7a5e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .contact-details p {
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            color: #1e3a2f;
+        }
+        .contact-form {
+            flex: 1.8;
+            background: white;
+            padding: 1.8rem;
+            border-radius: 1.8rem;
+            box-shadow: 0 12px 28px -10px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            color: #155f48;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border-radius: 1rem;
+            border: 1.5px solid #d0e2d4;
+            transition: 0.2s;
+            font-size: 0.95rem;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #48bb78;
+            box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.2);
+        }
+        .submit-btn {
+            background: linear-gradient(135deg, #1e6f5c, #2a9d8f);
+            width: 100%;
+            padding: 0.9rem;
+            border: none;
+            border-radius: 2.5rem;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            background: linear-gradient(135deg, #2a8a72, #34b7a3);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        .feedback-msg {
+            margin-top: 1rem;
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 1rem;
+            font-weight: 500;
+        }
+
+        /* toast notification */
+        .toast-notify {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            background: #1e2f32e6;
+            backdrop-filter: blur(12px);
+            color: #e6fffa;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 500;
+            z-index: 1100;
+            animation: slideIn 0.3s ease forwards;
+            border-left: 6px solid #48bb78;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(40px);}
+            to { opacity: 1; transform: translateX(0);}
+        }
+
+        .hide-page {
+            display: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.75rem;
+            color: #2c5a4a;
+            font-weight: 500;
+        }
+
+        @media (max-width: 700px) {
+            .glass-header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            .content-pane {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <header class="glass-header">
+        <div class="logo">
+            <h1>🏥 MediCore<span>Gestão Médica Avançada</span></h1>
+        </div>
+        <div class="nav-menu">
+            <button id="homeBtn" class="nav-btn active">📋 Início</button>
+            <button id="contactBtn" class="nav-btn">📞 Contato Clínico</button>
+        </div>
+    </header>
+
+    <!-- HOME - Área administrativa do consultório -->
+    <div id="homePage" class="content-pane">
+        <div class="cards-grid">
+            <div class="medical-card">
+                <img class="card-img" src="https://picsum.photos/id/48/400/220" alt="Consultórios">
+                <div class="card-content">
+                    <span class="badge-med">👨‍⚕️ ESPECIALIDADES</span>
+                    <h3>Agendamentos</h3>
+                    <p>Gerencie consultas, exames e retornos com painel inteligente. Visualize a ocupação diária.</p>
+                    <button class="dynamic-btn" data-action="schedule">📅 Gerenciar agenda →</button>
+                </div>
+            </div>
+            <div class="medical-card">
+                <img class="card-img" src="https://picsum.photos/id/176/400/220" alt="Prontuário">
+                <div class="card-content">
+                    <span class="badge-med">📂 PRONTUÁRIO</span>
+                    <h3>Pacientes Digital</h3>
+                    <p>Histórico clínico, receitas digitais e acompanhamento personalizado por especialidade.</p>
+                    <button class="dynamic-btn" data-action="patients">👥 Acessar pacientes →</button>
+                </div>
+            </div>
+            <div class="medical-card">
+                <img class="card-img" src="https://picsum.photos/id/182/400/220" alt="Faturamento">
+                <div class="card-content">
+                    <span class="badge-med">💰 FINANCEIRO</span>
+                    <h3>Faturamento Médico</h3>
+                    <p>Controle de convênios, repasses e fluxo de caixa. Relatórios executivos mensais.</p>
+                    <button class="dynamic-btn" data-action="billing">📊 Detalhes financeiros →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blocos Indicadores de performance do consultório -->
+        <div class="stats-blocks">
+            <div class="stat-item">
+                <h4>🩺 Pacientes no Mês</h4>
+                <div class="stat-number" id="patientCount">1.852</div>
+                <button class="mini-btn" id="incPatientBtn">+ Nova Consulta</button>
+            </div>
+            <div class="stat-item">
+                <h4>📅 Consultas Hoje</h4>
+                <div class="stat-number" id="todayAppointments">24</div>
+                <button class="mini-btn" id="addAppointmentBtn">Adicionar</button>
+            </div>
+            <div class="stat-item">
+                <h4>⭐ Taxa de Retorno</h4>
+                <div class="stat-number" id="returnRate">94%</div>
+                <button class="mini-btn" id="updateRateBtn">Simular Melhoria</button>
+            </div>
+        </div>
+        <p style="margin-top: 24px; font-size: 0.85rem; text-align: center; color: #2c5a4a;">✨ Módulo administrativo — atualizações dinâmicas em tempo real</p>
+    </div>
+
+    <!-- PÁGINA CONTATO - consultório médico -->
+    <div id="contactPage" class="content-pane hide-page">
+        <div class="contact-wrapper">
+            <div class="contact-info">
+                <h2>📋 Central da Clínica</h2>
+                <p>Entre em contato com a administração do consultório médico. Suporte 24h para emergências administrativas.</p>
+                <div class="contact-details">
+                    <p>🏥 <strong>Clínica MediCore</strong> - Av. Paulista, 1578, 10º andar - SP</p>
+                    <p>📞 (11) 3456-7890 / (11) 98765-4321</p>
+                    <p>✉️ contato@medicore.admin.br</p>
+                    <p>🕒 Atendimento: Seg-Sex, 8h às 19h</p>
+                </div>
+                <div style="margin-top: 20px;">
+                    <img src="https://picsum.photos/id/15/450/160" alt="Clínica ilustrativa" style="width:100%; border-radius: 1.2rem; object-fit: cover; box-shadow: 0 8px 15px rgba(0,0,0,0.1);">
+                </div>
+            </div>
+            <div class="contact-form">
+                <h3>✉️ Fale com a administração</h3>
+                <form id="medicalContactForm">
+                    <div class="form-group">
+                        <label>Nome completo</label>
+                        <input type="text" id="contactName" placeholder="Dr(a). ou Gestor(a)">
+                    </div>
+                    <div class="form-group">
+                        <label>E-mail institucional</label>
+                        <input type="email" id="contactEmail" placeholder="exemplo@consultorio.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Assunto / Especialidade</label>
+                        <input type="text" id="contactSubject" placeholder="Ex: Convênios, Agendamento, Urgência">
+                    </div>
+                    <div class="form-group">
+                        <label>Mensagem administrativa</label>
+                        <textarea rows="4" id="contactMsg" placeholder="Descreva sua solicitação operacional..."></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">📨 Enviar para gestão</button>
+                    <div id="formFeedback" class="feedback-msg"></div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <footer>MediCore · sistema de gestão hospitalar inteligente — dados simulados para demonstração administrativa</footer>
+</div>
+
+<script>
+    // Navegação entre páginas
+    const homePage = document.getElementById('homePage');
+    const contactPage = document.getElementById('contactPage');
+    const homeBtn = document.getElementById('homeBtn');
+    const contactBtn = document.getElementById('contactBtn');
+
+    function switchToHome() {
+        homePage.classList.remove('hide-page');
+        contactPage.classList.add('hide-page');
+        homeBtn.classList.add('active');
+        contactBtn.classList.remove('active');
+    }
+    function switchToContact() {
+        contactPage.classList.remove('hide-page');
+        homePage.classList.add('hide-page');
+        contactBtn.classList.add('active');
+        homeBtn.classList.remove('active');
+    }
+    homeBtn.addEventListener('click', switchToHome);
+    contactBtn.addEventListener('click', switchToContact);
+
+    // Toast message
+    function toastMessage(msg, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = 'toast-notify';
+        toast.style.borderLeftColor = isError ? '#f56565' : '#48bb78';
+        toast.innerText = msg;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transform = 'translateX(30px)';
+            setTimeout(() => toast.remove(), 500);
+        }, 3000);
+    }
+
+    // BOTÕES DINÂMICOS dos cards (ações médicas)
+    const actionBtns = document.querySelectorAll('.dynamic-btn[data-action]');
+    actionBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const action = btn.dataset.action;
+            if (action === 'schedule') {
+                toastMessage('📅 Abrindo agenda centralizada. 8 consultas pendentes de confirmação.');
+                setTimeout(() => toastMessage('✅ Horários sincronizados com os médicos.'), 1000);
+            } else if (action === 'patients') {
+                toastMessage('👥 Banco de pacientes: 1.284 registros ativos, 23 novos hoje.');
+            } else if (action === 'billing') {
+                toastMessage('💰 Demonstrativo financeiro: Faturamento R$ 387K neste trimestre.');
+            }
+        });
+    });
+
+    // ************ MÉTRICAS DINÂMICAS (Indicadores) ************
+    // Pacientes no mês
+    let patientCountElem = document.getElementById('patientCount');
+    let incPatientBtn = document.getElementById('incPatientBtn');
+    incPatientBtn.addEventListener('click', () => {
+        let current = parseInt(patientCountElem.innerText.replace(/\./g, ''));
+        let newVal = current + Math.floor(Math.random() * 12) + 3;
+        patientCountElem.innerText = newVal.toLocaleString();
+        toastMessage(`🩺 Novo atendimento registrado. Total de pacientes no mês: ${newVal.toLocaleString()}`);
+    });
+
+    // Consultas hoje
+    let todayAppElem = document.getElementById('todayAppointments');
+    let addAppointmentBtn = document.getElementById('addAppointmentBtn');
+    addAppointmentBtn.addEventListener('click', () => {
+        let curr = parseInt(todayAppElem.innerText);
+        let add = Math.floor(Math.random() * 3) + 1;
+        let newVal = curr + add;
+        todayAppElem.innerText = newVal;
+        toastMessage(`📅 +${add} consulta(s) agendada(s) para hoje. Total: ${newVal}`);
+        if (newVal > 32) toastMessage('⚠️ Agenda lotada! Considere expandir horários.', false);
+    });
+
+    // Taxa de Retorno
+    let returnRateSpan = document.getElementById('returnRate');
+    let updateRateBtn = document.getElementById('updateRateBtn');
+    updateRateBtn.addEventListener('click', () => {
+        let currentText = returnRateSpan.innerText;
+        let currentVal = parseInt(currentText);
+        let variation = (Math.random() * 4 - 1).toFixed(1);
+        let newRate = currentVal + parseFloat(variation);
+        if (newRate > 99) newRate = 99;
+        if (newRate < 78) newRate = 78;
+        returnRateSpan.innerText = Math.floor(newRate) + '%';
+        let diff = (newRate - currentVal).toFixed(1);
+        if (diff > 0) toastMessage(`⭐ Taxa de retorno aumentou +${diff}%! Pacientes satisfeitos.`);
+        else if (diff < 0) toastMessage(`📉 Taxa de retorno reduziu ${Math.abs(diff)}%. Analisar feedbacks.`, true);
+        else toastMessage(`✨ Taxa mantida em ${newRate}%`);
+    });
+
+    // Simular atualização automática a cada 35s para demonstrar dinamismo médico
+    setInterval(() => {
+        if (!homePage.classList.contains('hide-page')) {
+            const randomMetric = Math.floor(Math.random() * 2);
+            if (randomMetric === 0) {
+                let patientVal = parseInt(patientCountElem.innerText.replace(/\./g, ''));
+                let addRandom = Math.floor(Math.random() * 6)+1;
+                patientCountElem.innerText = (patientVal + addRandom).toLocaleString();
+                toastMessage(`📊 Atualização automática: +${addRandom} pacientes registrados no sistema.`);
+            } else {
+                let todayVal = parseInt(todayAppElem.innerText);
+                if (todayVal < 45) {
+                    let addConsult = Math.floor(Math.random() * 2);
+                    if (addConsult > 0) {
+                        todayAppElem.innerText = todayVal + addConsult;
+                        toastMessage(`⏰ Alerta de sistema: +${addConsult} consulta adicionada à agenda.`);
+                    }
+                }
+            }
+        }
+    }, 30000);
+
+    // ************ FORMULÁRIO DE CONTATO MÉDICO ************
+    const contactForm = document.getElementById('medicalContactForm');
+    const feedbackDiv = document.getElementById('formFeedback');
+
+    contactForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('contactName').value.trim();
+        const email = document.getElementById('contactEmail').value.trim();
+        const subject = document.getElementById('contactSubject').value.trim();
+        const message = document.getElementById('contactMsg').value.trim();
+
+        if (!name || !email || !subject || !message) {
+            feedbackDiv.innerHTML = '<span style="color:#c0392b;">⚠️ Preencha todos os campos para contato administrativo.</span>';
+            toastMessage('Formulário incompleto!', true);
+            return;
+        }
+        if (!email.includes('@') || !email.includes('.')) {
+            feedbackDiv.innerHTML = '<span style="color:#c0392b;">📧 E-mail inválido. Utilize formato valido@dominio.com</span>';
+            toastMessage('Endereço de e-mail incorreto.', true);
+            return;
+        }
+
+        feedbackDiv.innerHTML = '<span style="color:#2a7f6e;">✅ Mensagem enviada à secretaria médica. Retorno em até 2h.</span>';
+        toastMessage('Sua solicitação foi protocolada. Obrigado!');
+        // limpar campos
+        setTimeout(() => {
+            document.getElementById('contactName').value = '';
+            document.getElementById('contactEmail').value = '';
+            document.getElementById('contactSubject').value = '';
+            document.getElementById('contactMsg').value = '';
+            feedbackDiv.innerHTML = '';
+        }, 1800);
+    });
+
+    // efeito de boas vindas
+    window.addEventListener('load', () => {
+        switchToHome();
+        toastMessage('🏥 Bem-vindo ao MediCore | Sistema Administrativo de Consultório');
+    });
+</script>
+</body>
+</html>
